@@ -1,5 +1,5 @@
 module EvalFormula where
-
+import Data.Bits (xor)
 -- foldl/foldr https://www.youtube.com/watch?v=0qvi_sTJbEw
 
 type Stack = [Bool]
@@ -16,25 +16,33 @@ pushBit _ c = error ("Invalid bit: " ++ [c])
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
+evalOp   (a:rest) '!' = (not a): rest
 evalOp (b:a:rest) '&' = (a && b) : rest
 evalOp (b:a:rest) '|' = (a || b) : rest
-evalOp (b:a:rest) '>' = (not a || b) : rest  -- implication
-evalOp (b:a:rest) '=' = (a == b) : rest      -- equality
+evalOp (b:a:rest) '^' = (a `xor` b) : rest
+evalOp (b:a:rest) '>' = (not a || b) : rest
+evalOp (b:a:rest) '=' = (a == b) : rest
 evalOp _ c = error ("Unknown op or not enough operands: " ++ [c])
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
-    -- if we finished the string
 evalFormula' [] [result] = result
-    -- if the stack has something else and not only the result
 evalFormula' [] _        = error "Invalid formula: stack not empty at end"
-    -- normal case there is something in the string
-evalFormula' (c:cs) stack -- c is the first element of the string
-  | c == '1' || c == '0' = evalFormula' cs (pushBit stack c)         -- push bits
-  | c `elem` "&|>="      = evalFormula' cs (evalOp stack c)          -- apply operators
+evalFormula' (c:cs) stack
+  | c == '1' || c == '0' = evalFormula' cs (pushBit stack c)        -- push bits
+  | c `elem` "!&|^>="      = evalFormula' cs (evalOp stack c)         -- apply operators
   | otherwise            = error ("Invalid character: " ++ [c])     -- invalid character
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
 evalFormula proposition = evalFormula' proposition []
 ------------------------------------------------------------------------------
+--main :: IO ()
+--main = do
+--  let stack = [1, 2, 3, 4]
+--  let a:b:stackRest = stack  -- pattern matching on the stack
+--  let newStack = 5:stack
+--  print a
+--  print b
+--  print stackRest
+--  print newStack
