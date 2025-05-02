@@ -4,18 +4,16 @@ import Data.Bits (xor)
 
 type Stack = [Bool]
 
-evalFormula :: String -> Bool
-evalFormula' :: String -> Stack -> Bool
-pushBit :: Stack -> Char -> Stack
-evalOp :: Stack -> Char -> Stack
 
 ------------------------------------------------------------------------------
+pushBit :: Stack -> Char -> Stack
 pushBit stack '1' = True : stack
 pushBit stack '0' = False : stack
 pushBit _ c = error ("Invalid bit: " ++ [c])
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
+evalOp :: Stack -> Char -> Stack
 evalOp   (a:rest) '!' = (not a): rest
 evalOp (b:a:rest) '&' = (a && b) : rest
 evalOp (b:a:rest) '|' = (a || b) : rest
@@ -26,6 +24,7 @@ evalOp _ c = error ("Unknown op or not enough operands: " ++ [c])
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
+evalFormula' :: String -> Stack -> Bool
 evalFormula' [] [result] = result
 evalFormula' [] _        = error "Invalid formula: stack not empty at end"
 evalFormula' (c:cs) stack
@@ -35,6 +34,7 @@ evalFormula' (c:cs) stack
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
+evalFormula :: String -> Bool
 evalFormula proposition = evalFormula' proposition []
 ------------------------------------------------------------------------------
 --main :: IO ()

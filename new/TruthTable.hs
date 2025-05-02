@@ -42,7 +42,7 @@ replaceWithValues formula vars =
   where
     lookupBool c = case lookup c [(ch, val) | (_, ch, val) <- vars] of
                      Just v  -> v
-                     Nothing -> False
+                     Nothing -> error "this doesn't make sense ?!"
 ---------------------------------------------------------------------
 
 ---------------------------------------------------------------------
@@ -58,6 +58,7 @@ printHeader vars = do
 ---------------------------------------------------------------------
 
 ---------------------------------------------------------------------
+printResultRow :: [(Int, Char, Bool)] -> Bool -> IO ()
 printResultRow vars res = do
  mapM_ (\(_, _, v) -> putStr "| " >> putStr (showBit v) >> putStr " ") vars
  putStr "| " >> putStr (showBit res) >> putStr " |\n"
@@ -73,8 +74,7 @@ evaluateAndPrint formula vars currentIter maxIterations
   let result = evalFormula newFormula
   printResultRow newVars result
   evaluateAndPrint formula newVars (currentIter + 1) maxIterations
-
-
+---------------------------------------------------------------------
 
 ---------------------------------------------------------------------
 truthTable :: String -> IO ()
